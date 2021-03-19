@@ -1,8 +1,14 @@
 package handler
 
-import "net/http"
+import (
+	"encoding/json"
+	"net/http"
+)
 
 // NewVersionHandler returns Fast Finder's current version.
-func NewVersionHandler(_ *HandlerContext) (int, string) {
-	return http.StatusOK, "0.0.1"
+func NewVersionHandler(_ HandlerContext) (int, string) {
+	resMap := map[string]string{"version": "0.0.2"}
+	res, _ := json.Marshal(resMap)
+
+	return http.StatusOK, string(res)
 }
