@@ -21,6 +21,9 @@ func main() {
 	// Set router routes.
 	r.GET("/version", handler.NewVersionHandler)
 
+	// Set routes for not found.
+	r.NoRoute(handler.NewNotFoundHandler)
+
 	// Start router.
 	r.Start(":3000")
 

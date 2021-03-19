@@ -30,6 +30,11 @@ func (r *ginRouter) GET(path string, h handler.Handler) {
 	r.engine.GET(path, ginHandlerWrapper(h))
 }
 
+// NotFound handles requests that do not have an associated handler.
+func (r *ginRouter) NoRoute(h handler.Handler) {
+	r.engine.NoRoute(ginHandlerWrapper(h))
+}
+
 // Start starts the router listening for requests.
 func (r *ginRouter) Start(address string) {
 	r.engine.Run(address)
@@ -39,7 +44,12 @@ func (r *ginRouter) Start(address string) {
 // passed to the handlers.
 func ginHandlerWrapper(h handler.Handler) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		requestContext := &handler.HandlerContext{}
+		// Convert gin context to handler context.
+		requestContextOptions := &handler.HandlerContextOptions{
+			Method: c.Request.Method,
+			Path:   c.Request.URL.Path,
+		}
+		requestContext := handler.NewHandlerContext(requestContextOptions)
 		status, response := h(requestContext)
 		c.String(status, response)
 	}
