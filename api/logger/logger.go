@@ -32,17 +32,17 @@ func SetLogLevel(level int) {
 }
 
 // log sets a standard format for all logger functions to call.
-func log(level int, f string, messages ...interface{}) {
+func log(level int, f string, a ...interface{}) {
 	if level < logLevel {
 		return
 	}
 
 	levelString := levelMap[level]
-	m := fmt.Sprintf(f, messages...)
+	m := fmt.Sprintf(f, a...)
 	logger("%s: %s\n", levelString, m)
 }
 
 // Info allows log messages to be written at the Info level.
-func Info(format string, messages ...interface{}) {
-	log(LevelInfo, format, messages...)
+func Info(format string, a ...interface{}) {
+	log(LevelInfo, format, a...)
 }
