@@ -1,6 +1,10 @@
 package router
 
-import "github.com/maxstanley/fast_finder/handler"
+import (
+	"net/http"
+
+	"github.com/maxstanley/fast_finder/handler"
+)
 
 // Router will allow requests to he handled when requests are sent to specified
 // paths.
@@ -9,6 +13,6 @@ type Router interface {
 	GET(path string, h handler.Handler)
 	// NotFound handles requests that do not have an associated handler.
 	NoRoute(h handler.Handler)
-	// Start starts the router listening for requests.
-	Start(address string)
+	// Handler returns the request handler for the router.
+	Handler() http.Handler
 }

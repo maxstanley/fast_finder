@@ -1,6 +1,8 @@
 package router
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/maxstanley/fast_finder/handler"
 )
@@ -35,9 +37,9 @@ func (r *ginRouter) NoRoute(h handler.Handler) {
 	r.engine.NoRoute(ginHandlerWrapper(h))
 }
 
-// Start starts the router listening for requests.
-func (r *ginRouter) Start(address string) {
-	r.engine.Run(address)
+// Handler returns the request handler for the router.
+func (r *ginRouter) Handler() http.Handler {
+	return r.engine
 }
 
 // ginHandlerWrapper wraps the gin.Context so that a custom context can be
