@@ -26,5 +26,5 @@ func NewSearchHandler(c HandlerContext) (int, string) {
 	}
 
 	// Return the found Link for the associate keyword.
-	return http.StatusOK, shortcut.Link
+	return http.StatusTemporaryRedirect, shortcut.Link
 }

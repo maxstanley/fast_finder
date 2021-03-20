@@ -55,7 +55,14 @@ func ginHandlerWrapper(h handler.Handler) func(c *gin.Context) {
 		requestContextOptions := ginRequestContext(c)
 		requestContext := handler.NewHandlerContext(requestContextOptions)
 		status, response := h(requestContext)
-		c.String(status, response)
+
+		// If the response status is a redirect, respond with a redirect.
+		if status == http.StatusTemporaryRedirect {
+			c.Redirect(status, response)
+		} else {
+			// Else return the response as string.
+			c.String(status, response)
+		}
 	}
 }
 
