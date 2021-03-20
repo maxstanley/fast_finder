@@ -9,6 +9,11 @@ type HandlerContext interface {
 	Method() string
 	// Path contains the relative path the request was sent to.
 	Path() string
+	// Status returns the status that was returned in the response.
+	Status() int
+
+	// Next moves execution onto the next handler.
+	Next() func()
 }
 
 // HandlerContextOptions is used to populate the HandlerContext.
@@ -17,6 +22,11 @@ type HandlerContextOptions struct {
 	Method string
 	// Path contains the relative path the request was sent to.
 	Path string
+	// Status returns the status that was returned in the response.
+	Status int
+
+	// Next moves execution onto the next handler.
+	Next func()
 }
 
 // handleContext contains the request context.
@@ -38,4 +48,14 @@ func (c *handlerContext) Method() string {
 // Path contains the relative path the request was sent to.
 func (c *handlerContext) Path() string {
 	return c.o.Path
+}
+
+// Status returns the status that was returned in the response.
+func (c *handlerContext) Status() int {
+	return c.o.Status
+}
+
+// Next moves execution onto the next handler.
+func (c *handlerContext) Next() func() {
+	return c.o.Next
 }

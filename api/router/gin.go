@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/maxstanley/fast_finder/handler"
+	"github.com/maxstanley/fast_finder/middleware"
 )
 
 // ginRouter implements the Router interface for gin-gonic.
@@ -37,6 +38,11 @@ func (r *ginRouter) NoRoute(h handler.Handler) {
 	r.engine.NoRoute(ginHandlerWrapper(h))
 }
 
+// Use allows middlewares to be called.
+func (r *ginRouter) Use(h middleware.Handler) {
+	r.engine.Use(ginMiddlewareWrapper(h))
+}
+
 // Handler returns the request handler for the router.
 func (r *ginRouter) Handler() http.Handler {
 	return r.engine
@@ -50,9 +56,27 @@ func ginHandlerWrapper(h handler.Handler) func(c *gin.Context) {
 		requestContextOptions := &handler.HandlerContextOptions{
 			Method: c.Request.Method,
 			Path:   c.Request.URL.Path,
+			Status: c.Writer.Status(),
+			Next:   c.Next,
 		}
 		requestContext := handler.NewHandlerContext(requestContextOptions)
 		status, response := h(requestContext)
 		c.String(status, response)
+	}
+}
+
+// ginMiddlewareWrapper wraps the gin.Context so that a custom context can be
+// passed to the middleware handlers.
+func ginMiddlewareWrapper(h middleware.Handler) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		// Convert gin context to handler context.
+		requestContextOptions := &handler.HandlerContextOptions{
+			Method: c.Request.Method,
+			Path:   c.Request.URL.Path,
+			Status: c.Writer.Status(),
+			Next:   c.Next,
+		}
+		requestContext := handler.NewHandlerContext(requestContextOptions)
+		h(requestContext)
 	}
 }
