@@ -12,6 +12,8 @@ import (
 type Router interface {
 	// GET handles requests that are sent with the GET method.
 	GET(path string, h handler.Handler)
+	// POST handles requests that are sent with the POST method.
+	POST(path string, h handler.Handler)
 	// NotFound handles requests that do not have an associated handler.
 	NoRoute(h handler.Handler)
 
