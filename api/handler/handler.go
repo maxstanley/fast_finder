@@ -11,6 +11,8 @@ type HandlerContext interface {
 	Path() string
 	// Status returns the status that was returned in the response.
 	Status() int
+	// Param takes a string and returns the associated path pararemeter.
+	Param(string) string
 
 	// Next moves execution onto the next handler.
 	Next() func()
@@ -24,6 +26,8 @@ type HandlerContextOptions struct {
 	Path string
 	// Status returns the status that was returned in the response.
 	Status int
+	// Param takes a string and returns the associated path pararemeter.
+	Param func(string) string
 
 	// Next moves execution onto the next handler.
 	Next func()
@@ -58,4 +62,9 @@ func (c *handlerContext) Status() int {
 // Next moves execution onto the next handler.
 func (c *handlerContext) Next() func() {
 	return c.o.Next
+}
+
+// Param takes a string and returns the associated path pararemeter.
+func (c *handlerContext) Param(p string) string {
+	return c.o.Param(p)
 }

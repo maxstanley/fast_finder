@@ -30,6 +30,7 @@ func main() {
 
 	// Set router routes.
 	r.GET("/version", handler.NewVersionHandler)
+	r.GET("/search/:search", handler.NewSearchHandler)
 
 	// Set routes for not found.
 	r.NoRoute(handler.NewNotFoundHandler)
