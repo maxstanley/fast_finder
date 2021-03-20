@@ -11,6 +11,7 @@ import (
 
 	"github.com/maxstanley/fast_finder/handler"
 	"github.com/maxstanley/fast_finder/logger"
+	"github.com/maxstanley/fast_finder/middleware"
 	"github.com/maxstanley/fast_finder/router"
 )
 
@@ -23,6 +24,9 @@ func main() {
 
 	// Create new router.
 	r := router.NewGinRouter()
+
+	// Enable logging middleware.
+	r.Use(middleware.NewLoggerMiddleware)
 
 	// Set router routes.
 	r.GET("/version", handler.NewVersionHandler)
@@ -37,7 +41,7 @@ func main() {
 	}
 
 	// Starts the HTTP Server in a go routine so the interrupt signals can be
-	// handled.	 
+	// handled.
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
 			logger.Info("HTTP Server Error: %s", err.Error())
