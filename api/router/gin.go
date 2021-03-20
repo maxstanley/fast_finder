@@ -33,6 +33,11 @@ func (r *ginRouter) GET(path string, h handler.Handler) {
 	r.engine.GET(path, ginHandlerWrapper(h))
 }
 
+// POST hanldes requests that are sent with the POST method.
+func (r *ginRouter) POST(path string, h handler.Handler) {
+	r.engine.POST(path, ginHandlerWrapper(h))
+}
+
 // NotFound handles requests that do not have an associated handler.
 func (r *ginRouter) NoRoute(h handler.Handler) {
 	r.engine.NoRoute(ginHandlerWrapper(h))
@@ -79,10 +84,11 @@ func ginMiddlewareWrapper(h middleware.Handler) func(c *gin.Context) {
 // ginRequestContext converts gin context to handler context.
 func ginRequestContext(c *gin.Context) *handler.HandlerContextOptions {
 	return &handler.HandlerContextOptions{
-		Method: c.Request.Method,
-		Path:   c.Request.URL.Path,
-		Status: c.Writer.Status(),
-		Param:  c.Param,
-		Next:   c.Next,
+		Method:            c.Request.Method,
+		Path:              c.Request.URL.Path,
+		Status:            c.Writer.Status(),
+		Param:             c.Param,
+		UnmarshalJSONBody: c.ShouldBindJSON,
+		Next:              c.Next,
 	}
 }

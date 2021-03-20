@@ -13,6 +13,8 @@ type HandlerContext interface {
 	Status() int
 	// Param takes a string and returns the associated path pararemeter.
 	Param(string) string
+	// UnmarshalJSONBody is used to bind the data in the request body to a struct.
+	UnmarshalJSONBody(interface{}) error
 
 	// Next moves execution onto the next handler.
 	Next() func()
@@ -28,6 +30,8 @@ type HandlerContextOptions struct {
 	Status int
 	// Param takes a string and returns the associated path pararemeter.
 	Param func(string) string
+	// UnmarshalJSONBody is used to bind the data in the request body to a struct.
+	UnmarshalJSONBody func(interface{}) error
 
 	// Next moves execution onto the next handler.
 	Next func()
@@ -62,6 +66,11 @@ func (c *handlerContext) Status() int {
 // Next moves execution onto the next handler.
 func (c *handlerContext) Next() func() {
 	return c.o.Next
+}
+
+// UnmarshalJSONBody is used to bind the data in the request body to a struct.
+func (c *handlerContext) UnmarshalJSONBody(i interface{}) error {
+	return c.o.UnmarshalJSONBody(i)
 }
 
 // Param takes a string and returns the associated path pararemeter.
