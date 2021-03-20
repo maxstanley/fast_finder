@@ -52,13 +52,7 @@ func (r *ginRouter) Handler() http.Handler {
 // passed to the handlers.
 func ginHandlerWrapper(h handler.Handler) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		// Convert gin context to handler context.
-		requestContextOptions := &handler.HandlerContextOptions{
-			Method: c.Request.Method,
-			Path:   c.Request.URL.Path,
-			Status: c.Writer.Status(),
-			Next:   c.Next,
-		}
+		requestContextOptions := ginRequestContext(c)
 		requestContext := handler.NewHandlerContext(requestContextOptions)
 		status, response := h(requestContext)
 		c.String(status, response)
@@ -69,14 +63,19 @@ func ginHandlerWrapper(h handler.Handler) func(c *gin.Context) {
 // passed to the middleware handlers.
 func ginMiddlewareWrapper(h middleware.Handler) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		// Convert gin context to handler context.
-		requestContextOptions := &handler.HandlerContextOptions{
-			Method: c.Request.Method,
-			Path:   c.Request.URL.Path,
-			Status: c.Writer.Status(),
-			Next:   c.Next,
-		}
+		requestContextOptions := ginRequestContext(c)
 		requestContext := handler.NewHandlerContext(requestContextOptions)
 		h(requestContext)
+	}
+}
+
+// ginRequestContext converts gin context to handler context.
+func ginRequestContext(c *gin.Context) *handler.HandlerContextOptions {
+	return &handler.HandlerContextOptions{
+		Method: c.Request.Method,
+		Path:   c.Request.URL.Path,
+		Status: c.Writer.Status(),
+		Param:  c.Param,
+		Next:   c.Next,
 	}
 }
