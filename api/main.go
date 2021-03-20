@@ -9,6 +9,11 @@ import (
 	"syscall"
 	"time"
 
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+	gorm_logger "gorm.io/gorm/logger"
+
+	"github.com/maxstanley/fast_finder/datastore"
 	"github.com/maxstanley/fast_finder/handler"
 	"github.com/maxstanley/fast_finder/logger"
 	"github.com/maxstanley/fast_finder/middleware"
@@ -22,6 +27,19 @@ func main() {
 
 	logger.Info("Starting Fast Finder API.")
 
+	logger.Info("Connecting to datastore.")
+
+	// Create datastore connection
+	config := &gorm.Config{
+		Logger: gorm_logger.Default.LogMode(gorm_logger.Silent),
+	}
+	_, err := datastore.NewGormDatastore(sqlite.Open("fast_finder.db"), config)
+	if err != nil {
+		logger.Info("Failed to create datastore connection!")
+		os.Exit(1)
+	}
+
+	logger.Info("Setting up API Handler.")
 	// Create new router.
 	r := router.NewGinRouter()
 
@@ -36,6 +54,7 @@ func main() {
 	r.NoRoute(handler.NewNotFoundHandler)
 
 	// Creates the HTTP Server.
+	logger.Info("Creating HTTP Server.")
 	server := &http.Server{
 		Addr:    ":3000",
 		Handler: r.Handler(),
@@ -44,6 +63,7 @@ func main() {
 	// Starts the HTTP Server in a go routine so the interrupt signals can be
 	// handled.
 	go func() {
+		logger.Info("Starting HTTP Server.")
 		if err := server.ListenAndServe(); err != nil {
 			logger.Info("HTTP Server Error: %s", err.Error())
 		}
